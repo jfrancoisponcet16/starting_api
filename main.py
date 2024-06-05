@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel
 from auth import authenticate
@@ -51,9 +51,10 @@ async def embeddings_endpoint(request: EmbeddingsRequest, credentials: HTTPBasic
 
 
 @app.post("/api/multimodal")
-async def multimodal_endpoint(request: MultimodalRequest, credentials: HTTPBasicCredentials = Depends(authenticate)):
+async def multimodal_endpoint(request: MultimodalRequest, file: UploadFile = File(...), credentials: HTTPBasicCredentials = Depends(authenticate)):
     try:
-        response = ollama.generate(model=request.model, prompt=request.prompt, images=request.image)
+        image_content = await file.read()
+        response = ollama.generate(model=request.model, prompt=request.prompt, images=image_content)
         return response
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
