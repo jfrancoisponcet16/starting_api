@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File
+from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File, Form
+from typing import Dict
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel
 from auth import authenticate
@@ -26,9 +27,6 @@ class EmbeddingsRequest(BaseModel):
     prompt: str
     
     
-class MultimodalRequest(BaseModel):
-    model: str
-    prompt: str
 
 @app.post("/api/chat")
 async def chat_endpoint(request: ChatRequest, credentials: HTTPBasicCredentials = Depends(authenticate)):
@@ -47,17 +45,14 @@ async def embeddings_endpoint(request: EmbeddingsRequest, credentials: HTTPBasic
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+import base64
 
 @app.post("/api/multimodal")
-async def multimodal_endpoint(request: MultimodalRequest, file: UploadFile = File(...), credentials: HTTPBasicCredentials = Depends(authenticate)):
+async def multimodal_endpoint(model: str = Form(...), prompt: str = Form(...), file: UploadFile = File(...), credentials: HTTPBasicCredentials = Depends(authenticate)):
     try:
         image_content = await file.read()
-        response = ollama.generate(model=request.model, prompt=request.prompt, images=image_content)
+        encoded_image = base64.b64encode(image_content).decode()
+        response = ollama.generate(model=model, prompt=prompt, images=[encoded_image])
         return response
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
