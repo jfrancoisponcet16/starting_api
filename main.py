@@ -10,22 +10,6 @@ from dotenv import load_dotenv
 
 app = FastAPI()
 
-# @app.get("/api/chat")
-# async def proxy_chat(query: str, credentials: HTTPBasicCredentials = Depends(authenticate)):
-#     url = "http://127.0.0.1:xxxxx/api/chat"
-#     async with httpx.AsyncClient() as client:
-#         try:
-#             response = await client.get(url, params={"query": query})
-#             response.raise_for_status()
-#             return JSONResponse(content=response.json())
-#         except httpx.HTTPStatusError as exc:
-#             raise HTTPException(status_code=exc.response.status_code, detail="Error from Ollama API")
-#         except httpx.RequestError as exc:
-#             raise HTTPException(status_code=500, detail="Error contacting Ollama API")
-
-# if __name__ == "__main__":
-#     import uvicorn
-#     uvicorn.run(app, host="0.0.0.0", port=8000)
 
 
 
@@ -40,6 +24,12 @@ class ChatRequest(BaseModel):
 class EmbeddingsRequest(BaseModel):
     model: str
     prompt: str
+    
+    
+class MultimodalRequest(BaseModel):
+    model: str
+    prompt: str
+    image: str 
 
 
 @app.post("/api/chat")
@@ -59,6 +49,14 @@ async def embeddings_endpoint(request: EmbeddingsRequest, credentials: HTTPBasic
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+@app.post("/api/multimodal")
+async def multimodal_endpoint(request: MultimodalRequest, credentials: HTTPBasicCredentials = Depends(authenticate)):
+    try:
+        response = ollama.generate(model=request.model, prompt=request.prompt, image=request.image)
+        return response
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 if __name__ == "__main__":
