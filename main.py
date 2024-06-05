@@ -29,8 +29,6 @@ class EmbeddingsRequest(BaseModel):
 class MultimodalRequest(BaseModel):
     model: str
     prompt: str
-    image: str 
-
 
 @app.post("/api/chat")
 async def chat_endpoint(request: ChatRequest, credentials: HTTPBasicCredentials = Depends(authenticate)):
