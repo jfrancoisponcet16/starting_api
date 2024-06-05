@@ -53,7 +53,7 @@ async def embeddings_endpoint(request: EmbeddingsRequest, credentials: HTTPBasic
 @app.post("/api/multimodal")
 async def multimodal_endpoint(request: MultimodalRequest, credentials: HTTPBasicCredentials = Depends(authenticate)):
     try:
-        response = ollama.generate(model=request.model, prompt=request.prompt, image=request.image)
+        response = ollama.generate(model=request.model, prompt=request.prompt, images=request.image)
         return response
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
