@@ -22,17 +22,14 @@ app = FastAPI()
 
 
 # Load model
-@app.on_event("startup")
-async def load_model():
-    global model, tokenizer
-    model_path = 'openbmb/MiniCPM-Llama3-V-2_5'
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    if 'int4' in model_path and device == 'mps':
-        raise ValueError('Error: running int4 model with bitsandbytes this machine is not supported right now.')
+model_path = 'openbmb/MiniCPM-Llama3-V-2_5'
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+if 'int4' in model_path and device == 'mps':
+    raise ValueError('Error: running int4 model with bitsandbytes this machine is not supported right now.')
 
-    model = AutoModel.from_pretrained(model_path, trust_remote_code=True).to(dtype=torch.float16).to(device=device)
-    tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
-    model.eval()
+model = AutoModel.from_pretrained(model_path, trust_remote_code=True).to(dtype=torch.float16).to(device=device)
+tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
+model.eval()
 
 ERROR_MSG = "Error, please retry"
 model_name = 'MiniCPM-Llama3-V 2.5'
