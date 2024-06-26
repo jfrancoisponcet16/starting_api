@@ -11,8 +11,8 @@ from fastapi.responses import JSONResponse
 import io
 from PIL import Image
 import traceback
-# import easyocr
-from doctr.io import DocumentFile
+import easyocr
+from doctr import DocumentFile
 from doctr.models import ocr_predictor
 
 
@@ -22,10 +22,26 @@ from doctr.models import ocr_predictor
 app = FastAPI()
 
 # Initialize the reader
-# reader = easyocr.Reader(['en'], gpu=True)
+reader = easyocr.Reader(['en'], gpu=True)
 # Initialize the predictor once at startup
 predictor = ocr_predictor(det_arch="db_resnet50", reco_arch="crnn_vgg16_bn", pretrained=True)
 
+
+
+
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+class ChatRequest(BaseModel):
+    model: str
+    messages: list[ChatMessage]
+    
+class EmbeddingsRequest(BaseModel):
+    model: str
+    prompt: str
+    
+ 
 
 
 @app.post("/api/chat")
