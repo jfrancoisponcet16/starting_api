@@ -11,7 +11,7 @@ from fastapi.responses import JSONResponse
 import io
 from PIL import Image
 import traceback
-import easyocr
+# import easyocr
 from doctr import DocumentFile
 from doctr.models import ocr_predictor
 
@@ -22,7 +22,7 @@ from doctr.models import ocr_predictor
 app = FastAPI()
 
 # Initialize the reader
-reader = easyocr.Reader(['en'], gpu=True)
+# reader = easyocr.Reader(['en'], gpu=True)
 # Initialize the predictor once at startup
 predictor = ocr_predictor(det_arch="db_resnet50", reco_arch="crnn_vgg16_bn", pretrained=True)
 
