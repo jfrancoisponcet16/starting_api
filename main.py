@@ -12,7 +12,7 @@ import io
 from PIL import Image
 import traceback
 # import easyocr
-from doctr import DocumentFile
+from doctr.io import DocumentFile
 from doctr.models import ocr_predictor
 
 
