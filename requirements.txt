@@ -4,7 +4,6 @@ httpx
 python-dotenv
 gunicorn
 ollama
-Pillow==10.1.0
 torch
 torchvision
 transformers
